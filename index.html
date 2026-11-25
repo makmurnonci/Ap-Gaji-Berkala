@@ -37,7 +37,7 @@ h1{font-size:clamp(1.5rem,3.4vw,2.1rem);line-height:1.15;margin:0;font-weight:80
 input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
 .tools input{flex:1 1 220px}
 .scroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:760px}
+table{width:100%;border-collapse:collapse;min-width:1000px}
 th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
 th{font-size:.8rem;color:var(--muted);font-weight:600}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
@@ -110,7 +110,7 @@ dialog textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);bo
 
 <section class="panel">
   <div class="tools">
-    <input id="q" type="search" placeholder="Cari nama atau NIP" aria-label="Cari nama atau NIP">
+    <input id="q" type="search" placeholder="Cari nama, NIP, jabatan, atau unit kerja" aria-label="Cari nama, NIP, jabatan, atau unit kerja">
     <select id="f" aria-label="Filter status">
       <option value="all">Semua status</option>
       <option value="late">Terlambat</option>
@@ -120,7 +120,7 @@ dialog textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);bo
   </div>
   <div class="scroll">
     <table>
-      <thead><tr><th>Pegawai</th><th>Golongan</th><th>TMT KGB terakhir</th><th>KGB berikutnya</th><th>Status</th><th class="num">Gaji lama</th><th class="num">Gaji baru</th><th></th></tr></thead>
+      <thead><tr><th>Pegawai</th><th>Jabatan</th><th>Unit kerja</th><th>Golongan</th><th>TMT KGB terakhir</th><th>KGB berikutnya</th><th>Status</th><th class="num">Gaji lama</th><th class="num">Gaji baru</th><th></th></tr></thead>
       <tbody id="rows"></tbody>
     </table>
   </div>
@@ -137,6 +137,8 @@ dialog textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);bo
     <label for="fi">NIP</label><input id="fi" required inputmode="numeric">
     <label for="fg">Golongan / ruang</label>
     <select id="fg"></select>
+    <label for="fj">Jabatan</label><input id="fj">
+    <label for="fu">Unit kerja</label><input id="fu">
     <label for="fm">Masa kerja golongan saat ini (tahun)</label><input id="fm" type="number" min="0" max="40">
     <p class="hint">Dipakai mencari gaji baru di tabel gaji (masa kerja + 2 tahun).</p>
     <label for="fd">TMT KGB terakhir</label><input id="fd" type="date" required>
@@ -230,13 +232,13 @@ function renderChart(){
 }
 function renderRows(){
   var q=$("q").value.trim().toLowerCase(),f=$("f").value;
-  var list=data.filter(function(e){return(!q||e.nama.toLowerCase().indexOf(q)>-1||e.nip.indexOf(q)>-1)&&(f==="all"||status(e)===f)})
+  var list=data.filter(function(e){return(!q||e.nama.toLowerCase().indexOf(q)>-1||e.nip.indexOf(q)>-1||(e.jab||"").toLowerCase().indexOf(q)>-1||(e.unit||"").toLowerCase().indexOf(q)>-1)&&(f==="all"||status(e)===f)})
     .sort(function(a,b){return nextDue(a.tmt)-nextDue(b.tmt)});
   $("empty").hidden=list.length>0;
   $("rows").innerHTML=list.map(function(e){
     var d=nextDue(e.tmt),n=days(d),s=status(e),ns=newSalary(e);
     var lbl=s==="late"?"Terlambat "+(-n)+" hari":s==="soon"?(n===0?"Hari ini":n+" hari lagi"):Math.round(n/30)+" bulan lagi";
-    return '<tr><td class="nm"><b>'+esc(e.nama)+'</b><small'+(nipOk(e.nip)?'':' style="color:var(--late)"')+'>'+esc(e.nip)+(nipOk(e.nip)?'':' (NIP tidak valid, perbaiki lewat Ubah)')+'</small></td><td>'+esc(e.gol)+'</td><td>'+tgl.format(parse(e.tmt))+'</td><td>'+tgl.format(d)+'</td><td><span class="badge '+s+'">'+lbl+'</span></td><td class="num">'+rp.format(e.lama)+'</td><td class="num">'+(ns.est?"~":"")+rp.format(ns.v)+'</td><td class="num"><button class="rowbtn" data-s="'+e.id+'">Buat SK</button><button class="rowbtn" data-e="'+e.id+'">Ubah</button><button class="rowbtn del" data-d="'+e.id+'">Hapus</button></td></tr>';
+    return '<tr><td class="nm"><b>'+esc(e.nama)+'</b><small'+(nipOk(e.nip)?'':' style="color:var(--late)"')+'>'+esc(e.nip)+(nipOk(e.nip)?'':' (NIP tidak valid, perbaiki lewat Ubah)')+'</small></td><td>'+esc(e.jab||"-")+'</td><td>'+esc(e.unit||"-")+'</td><td>'+esc(e.gol)+'</td><td>'+tgl.format(parse(e.tmt))+'</td><td>'+tgl.format(d)+'</td><td><span class="badge '+s+'">'+lbl+'</span></td><td class="num">'+rp.format(e.lama)+'</td><td class="num">'+(ns.est?"~":"")+rp.format(ns.v)+'</td><td class="num"><button class="rowbtn" data-s="'+e.id+'">Buat SK</button><button class="rowbtn" data-e="'+e.id+'">Ubah</button><button class="rowbtn del" data-d="'+e.id+'">Hapus</button></td></tr>';
   }).join("");
 }
 function renderData(){
@@ -255,13 +257,13 @@ function openForm(e){
   editId=e?e.id:null;
   $("dtitle").textContent=e?"Ubah data pegawai":"Tambah pegawai";
   $("fn").value=e?e.nama:"";$("fi").value=e?e.nip:"";$("fg").value=e?e.gol:"III/a";
-  $("fd").value=e?e.tmt:"";$("fm").value=e&&e.mkg!=null?e.mkg:"";$("fo").value=e?e.lama:"";$("fw").value=e&&e.baru?e.baru:"";
+  $("fd").value=e?e.tmt:"";$("fm").value=e&&e.mkg!=null?e.mkg:"";$("fj").value=e&&e.jab?e.jab:"";$("fu").value=e&&e.unit?e.unit:"";$("fo").value=e?e.lama:"";$("fw").value=e&&e.baru?e.baru:"";
   $("dlg").showModal();
 }
 $("add").addEventListener("click",function(){openForm(null)});
 $("cancel").addEventListener("click",function(){$("dlg").close()});
 $("form").addEventListener("submit",function(ev){
-  var rec={id:editId||"p"+Date.now(),nama:$("fn").value.trim(),nip:$("fi").value.trim(),gol:$("fg").value,tmt:$("fd").value,lama:+$("fo").value,baru:+$("fw").value||0,mkg:$("fm").value===""?null:+$("fm").value};
+  var rec={id:editId||"p"+Date.now(),nama:$("fn").value.trim(),nip:$("fi").value.trim(),gol:$("fg").value,tmt:$("fd").value,lama:+$("fo").value,baru:+$("fw").value||0,mkg:$("fm").value===""?null:+$("fm").value,jab:$("fj").value.trim(),unit:$("fu").value.trim()};
   if(editId){data=data.map(function(e){return e.id===editId?rec:e})}else{data.push(rec)}
   save();render();
 });
@@ -272,8 +274,8 @@ $("rows").addEventListener("click",function(ev){
   if(t.dataset.d&&confirm("Hapus data pegawai ini?")){data=data.filter(function(e){return e.id!==t.dataset.d});save();render()}
 });
 $("csv").addEventListener("click",function(){
-  var rows=[["Nama","NIP","Golongan","TMT KGB terakhir","KGB berikutnya","Gaji lama","Gaji baru"]];
-  data.forEach(function(e){rows.push([e.nama,'="'+e.nip+'"',e.gol,e.tmt,iso(nextDue(e.tmt)),e.lama,newSalary(e).v])});
+  var rows=[["Nama","NIP","Golongan","TMT KGB terakhir","Gaji pokok","Masa kerja golongan","Gaji baru","Jabatan","Unit kerja","Gaji baru (hitung)","KGB berikutnya"]];
+  data.forEach(function(e){rows.push([e.nama,'="'+e.nip+'"',e.gol,e.tmt,e.lama,e.mkg!=null?e.mkg:"",e.baru||"",e.jab||"",e.unit||"",newSalary(e).v,iso(nextDue(e.tmt))])});
   var csv=rows.map(function(r){return r.map(function(c){return'"'+String(c).replace(/"/g,'""')+'"'}).join(",")}).join("\n");
   saveFile("kgb.csv","\ufeff"+csv,"text/csv");
 });
@@ -335,7 +337,7 @@ function sheetHTML(e){
 }
 function drawSheet(){$("sheet").setAttribute("style",fontCss());$("sheet").innerHTML=sheetHTML(skEmp);var w=$("skwarn");if(w)w.hidden=!newSalary(skEmp).est}
 function openSK(e){
-  skEmp=e;skv=skDefaults();if(e.mkg!=null)skv.mk=String(e.mkg+2);
+  skEmp=e;skv=skDefaults();if(e.mkg!=null)skv.mk=String(e.mkg+2);if(e.jab)skv.jab=e.jab;if(e.unit)skv.unit=e.unit;
   var h='<h3>Isi SK untuk '+esc(e.nama)+'</h3><p class="hint">Pratinjau di kanan ikut berubah saat Anda mengetik.</p><div class="skwarn" id="skwarn">Gaji pokok baru masih estimasi 3%. Pasang tabel gaji dan isi masa kerja golongan, atau isi gaji baru lewat tombol Ubah, sebelum SK dicetak.</div><label for="sk_logo">Logo Pemerintah Kota Parepare</label><input id="sk_logo" type="file" accept="image/*"><p class="hint">Unggah sekali, tersimpan di browser ini dan dipakai untuk semua SK.</p><label for="sk_font">Jenis huruf</label><select id="sk_font">'+FONTS.map(function(f,i){return'<option value="'+i+'">'+f[0]+'</option>'}).join("")+'</select><label for="sk_size">Ukuran huruf</label><select id="sk_size">'+[10,11,12,13,14].map(function(n){return'<option value="'+n+'">'+n+' pt</option>'}).join("")+'</select>';
   SKF.forEach(function(f){
     h+='<label for="sk_'+f[0]+'">'+f[1]+'</label>';
@@ -373,7 +375,7 @@ var impMode="";
 function openImp(m){
   impMode=m;$("imptxt").value="";$("impfile").value="";
   $("imptitle").textContent=m==="emp"?"Impor data pegawai":"Pasang tabel gaji pokok";
-  $("impfmt").textContent=m==="emp"?"Urutan kolom: nama, nip, golongan, tmt_kgb_terakhir, gaji_pokok, masa_kerja_golongan. Baris judul boleh ada. Format tanggal: 2024-03-01 atau 01/03/2024. Di Excel, format kolom NIP sebagai Teks sebelum mengisi agar NIP 18 digit tidak berubah menjadi 1,9851E+18.":"Urutan kolom: golongan, masa_kerja_tahun, gaji_pokok. Contoh: III/b,10,3500000. Tabel tersimpan di browser ini."+(tab.length?" Saat ini terpasang "+tab.length+" baris.":"");
+  $("impfmt").textContent=m==="emp"?"Urutan kolom: nama, nip, golongan, tmt_kgb_terakhir, gaji_pokok, masa_kerja_golongan, gaji_baru, jabatan, unit_kerja. Kolom gaji_baru boleh kosong. Baris judul boleh ada. Format tanggal: 2024-03-01 atau 01/03/2024. Di Excel, format kolom NIP sebagai Teks sebelum mengisi agar NIP 18 digit tidak berubah menjadi 1,9851E+18.":"Urutan kolom: golongan, masa_kerja_tahun, gaji_pokok. Contoh: III/b,10,3500000. Tabel tersimpan di browser ini."+(tab.length?" Saat ini terpasang "+tab.length+" baris.":"");
   $("impmodew").hidden=m!=="emp";$("impclr").hidden=m==="emp"||!tab.length;
   $("dimp").showModal();
 }
@@ -388,11 +390,11 @@ $("impgo").addEventListener("click",function(){
   if(/^[\[{]/.test(raw)){try{js=JSON.parse(raw)}catch(x){alert("JSON tidak valid. Periksa tanda kurung dan koma.");return}}
   if(js){
     var L=Array.isArray(js)?js:((impMode==="emp"?js.pegawai:js.tabelGaji)||[]);
-    rows=impMode==="emp"?L.map(function(o){return[o.nama,o.nip||"",o.gol||o.golongan,o.tmt||o.tmt_kgb_terakhir,String(o.lama!=null?o.lama:(o.gaji_pokok||0)),o.mkg!=null?String(o.mkg):(o.masa_kerja_golongan!=null?String(o.masa_kerja_golongan):""),String(o.baru||o.gaji_baru||0)]}):tabRows(L).map(function(a){return[String(a[0]),String(a[1]),String(a[2])]});
+    rows=impMode==="emp"?L.map(function(o){return[o.nama,o.nip||"",o.gol||o.golongan,o.tmt||o.tmt_kgb_terakhir,String(o.lama!=null?o.lama:(o.gaji_pokok||0)),o.mkg!=null?String(o.mkg):(o.masa_kerja_golongan!=null?String(o.masa_kerja_golongan):""),String(o.baru||o.gaji_baru||0),o.jab||o.jabatan||"",o.unit||o.unit_kerja||""]}):tabRows(L).map(function(a){return[String(a[0]),String(a[1]),String(a[2])]});
   }else rows=parseCSV(raw);
   if(impMode==="emp"){
     rows.forEach(function(r,i){var t=toIso(r[3]||"");if(!r[0]||!t){if(i>0)bad++;return}
-      ok.push({id:"i"+Date.now()+"_"+i,nama:r[0],nip:fixNip(r[1]),gol:r[2]||"III/a",tmt:t,lama:num(r[4]),baru:num(r[6]),mkg:/^\s*\d+/.test(r[5]||"")?num(r[5]):null})});
+      ok.push({id:"i"+Date.now()+"_"+i,nama:r[0],nip:fixNip(r[1]),gol:r[2]||"III/a",tmt:t,lama:num(r[4]),baru:num(r[6]),jab:r[7]||"",unit:r[8]||"",mkg:/^\s*\d+/.test(r[5]||"")?num(r[5]):null})});
     if(!ok.length){alert("Tidak ada baris valid. Periksa urutan kolom dan format tanggal.");return}
     data=$("impmode").value==="replace"?ok:data.concat(ok);save();
     if(js&&!Array.isArray(js)){
@@ -411,14 +413,14 @@ $("impgo").addEventListener("click",function(){
 
 $("timp2").addEventListener("click",function(){openImp("emp")});
 $("ttab2").addEventListener("click",function(){openImp("tab")});
-$("tpl1").addEventListener("click",function(){saveFile("templat-pegawai.csv","nama,nip,golongan,tmt_kgb_terakhir,gaji_pokok,masa_kerja_golongan\nContoh Nama,198501012010011001,III/b,2024-03-01,3500000,10\n","text/csv")});
+$("tpl1").addEventListener("click",function(){saveFile("templat-pegawai.csv","nama,nip,golongan,tmt_kgb_terakhir,gaji_pokok,masa_kerja_golongan,gaji_baru,jabatan,unit_kerja\nContoh Nama,198501012010011001,III/b,2024-03-01,3500000,10,,Guru Kelas,SDN 1 Parepare\n","text/csv")});
 $("tpl2").addEventListener("click",function(){saveFile("templat-tabel-gaji.csv","golongan,masa_kerja_tahun,gaji_pokok\nIII/b,10,3500000\n","text/csv")});
 
 $("bkp").addEventListener("click",function(){
   var ttd={};try{ttd=JSON.parse(localStorage.getItem(SK_KEY)||"{}")}catch(e){}
   saveFile("kgb-cadangan.json",JSON.stringify({versi:1,dibuat:iso(now),pegawai:data,tabelGaji:tab,ttd:ttd},null,2),"application/json");
 });
-$("tpl1j").addEventListener("click",function(){saveFile("templat-pegawai.json",JSON.stringify([{nama:"Contoh Nama",nip:"198501012010011001",golongan:"III/b",tmt_kgb_terakhir:"2024-03-01",gaji_pokok:3500000,masa_kerja_golongan:10}],null,2),"application/json")});
+$("tpl1j").addEventListener("click",function(){saveFile("templat-pegawai.json",JSON.stringify([{nama:"Contoh Nama",nip:"198501012010011001",golongan:"III/b",tmt_kgb_terakhir:"2024-03-01",gaji_pokok:3500000,masa_kerja_golongan:10,jabatan:"Guru Kelas",unit_kerja:"SDN 1 Parepare"}],null,2),"application/json")});
 $("tpl2j").addEventListener("click",function(){saveFile("templat-tabel-gaji.json",JSON.stringify([{golongan:"III/b",masa_kerja_tahun:10,gaji_pokok:3500000}],null,2),"application/json")});
 
 load();render();

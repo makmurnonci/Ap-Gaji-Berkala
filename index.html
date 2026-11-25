@@ -278,9 +278,9 @@ $("csv").addEventListener("click",function(){
   saveFile("kgb.csv",csv,"text/csv");
 });
 function saveFile(name,text,type){
-  var p=window.claude&&window.claude.use?window.claude.use("downloads"):Promise.resolve(null);
+  var p=window.claude&&window.claude.use?Promise.resolve(window.claude.use("downloads")).catch(function(){return null}):Promise.resolve(null);
   p.then(function(d){
-    if(!d){alert("Unduhan tidak tersedia di tampilan ini. Buka artifact di claude.ai.");return}
+    if(!d){var u=URL.createObjectURL(new Blob([text],{type:type})),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000);return}
     return d.save({filename:name,data:new Blob([text],{type:type})});
   }).catch(function(){});
 }

@@ -111,6 +111,7 @@ dialog textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);bo
 <section class="panel">
   <h2>Jumlah KGB jatuh tempo, 12 bulan ke depan</h2>
   <p class="hint" style="margin:-6px 0 10px">Klik batang bulan untuk melihat tambahan gaji pokok dan daftar pegawainya. Bulan pertama sudah termasuk yang terlambat. Klik lagi untuk kembali.</p>
+  <button type="button" class="btn" id="allbtn" style="margin-bottom:10px">Lihat seluruhnya</button>
   <div class="chart" id="chart" role="img" aria-label="Grafik batang jumlah pegawai yang jatuh tempo KGB per bulan"></div>
 </section>
 
@@ -228,8 +229,8 @@ function mIdx(e){var d=nextDue(e.tmt);if(d<now)return 0;return (d.getFullYear()-
 function mLabel(i){var m=new Date(now.getFullYear(),now.getMonth()+i,1);return MON[m.getMonth()]+" "+m.getFullYear()}
 function renderStats(){
   var late=0,soon=0,extra=0,cnt=0;
-  data.forEach(function(e){var s=status(e);if(selM===null?s!=="ok":mIdx(e)===selM){extra+=newSalary(e).v-e.lama;cnt++}if(s==="late")late++;if(s==="soon")soon++});
-  var cards=[["Total pegawai",data.length,""],["Terlambat diproses",late,"late"],["Jatuh tempo ≤ 90 hari",soon,"soon"],[selM===null?"Tambahan gaji pokok per bulan":"Tambahan gaji pokok, "+mLabel(selM)+" ("+cnt+" pegawai)",rp.format(extra),""]];
+  data.forEach(function(e){var s=status(e);if(selM===null?s!=="ok":(selM==="all"||mIdx(e)===selM)){extra+=newSalary(e).v-e.lama;cnt++}if(s==="late")late++;if(s==="soon")soon++});
+  var cards=[["Total pegawai",data.length,""],["Terlambat diproses",late,"late"],["Jatuh tempo ≤ 90 hari",soon,"soon"],[selM===null?"Tambahan gaji pokok per bulan":selM==="all"?"Tambahan gaji pokok, seluruh pegawai ("+cnt+" pegawai)":"Tambahan gaji pokok, "+mLabel(selM)+" ("+cnt+" pegawai)",rp.format(extra),""]];
   $("stats").innerHTML=cards.map(function(c){return '<div class="stat '+c[2]+'"><span>'+c[0]+'</span><b>'+c[1]+'</b></div>'}).join("");
 }
 function renderChart(){
@@ -241,7 +242,7 @@ function renderChart(){
 }
 function renderRows(){
   var q=$("q").value.trim().toLowerCase(),f=$("f").value;
-  var list=data.filter(function(e){return(!q||e.nama.toLowerCase().indexOf(q)>-1||e.nip.indexOf(q)>-1||(e.jab||"").toLowerCase().indexOf(q)>-1||(e.unit||"").toLowerCase().indexOf(q)>-1)&&(f==="all"||status(e)===f)&&(selM===null||mIdx(e)===selM)})
+  var list=data.filter(function(e){return(!q||e.nama.toLowerCase().indexOf(q)>-1||e.nip.indexOf(q)>-1||(e.jab||"").toLowerCase().indexOf(q)>-1||(e.unit||"").toLowerCase().indexOf(q)>-1)&&(f==="all"||status(e)===f)&&(selM===null||selM==="all"||mIdx(e)===selM)})
     .sort(function(a,b){return nextDue(a.tmt)-nextDue(b.tmt)});
   $("empty").hidden=list.length>0;
   $("rows").innerHTML=list.map(function(e){
@@ -255,7 +256,7 @@ function renderData(){
   var m=data.filter(function(e){return e.mkg!=null}).length;
   $("tabstat").textContent=tab.length?tab.length+" baris terpasang. "+m+" dari "+data.length+" pegawai sudah punya masa kerja golongan.":"Belum terpasang. Impor tabel gaji agar gaji baru terhitung otomatis.";
 }
-function render(){renderStats();renderChart();renderRows();renderData()}
+function render(){renderStats();renderChart();renderRows();renderData();var b=$("allbtn");b.className="btn"+(selM==="all"?" primary":"");b.textContent=selM==="all"?"Kembali ke tampilan awal":"Lihat seluruhnya";b.setAttribute("aria-pressed",selM==="all")}
 
 $("today").textContent="Per "+tgl.format(now)+". Pantau jadwal KGB dan estimasi dampaknya pada gaji.";
 $("fg").innerHTML=GOL.map(function(g){return"<option>"+g+"</option>"}).join("");
@@ -433,6 +434,8 @@ $("tpl1j").addEventListener("click",function(){saveFile("templat-pegawai.json",J
 $("tpl2j").addEventListener("click",function(){saveFile("templat-tabel-gaji.json",JSON.stringify([{golongan:"III/b",masa_kerja_tahun:10,gaji_pokok:3500000}],null,2),"application/json")});
 
 $("chart").addEventListener("click",function(ev){var b=ev.target.closest("button.col");if(!b)return;var m=+b.dataset.m;selM=selM===m?null:m;render()});
+
+$("allbtn").addEventListener("click",function(){selM=selM==="all"?null:"all";render()});
 
 load();render();
 })();

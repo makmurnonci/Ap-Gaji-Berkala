@@ -273,9 +273,9 @@ $("rows").addEventListener("click",function(ev){
 });
 $("csv").addEventListener("click",function(){
   var rows=[["Nama","NIP","Golongan","TMT KGB terakhir","KGB berikutnya","Gaji lama","Gaji baru"]];
-  data.forEach(function(e){rows.push([e.nama,e.nip,e.gol,e.tmt,iso(nextDue(e.tmt)),e.lama,newSalary(e).v])});
+  data.forEach(function(e){rows.push([e.nama,'="'+e.nip+'"',e.gol,e.tmt,iso(nextDue(e.tmt)),e.lama,newSalary(e).v])});
   var csv=rows.map(function(r){return r.map(function(c){return'"'+String(c).replace(/"/g,'""')+'"'}).join(",")}).join("\n");
-  saveFile("kgb.csv",csv,"text/csv");
+  saveFile("kgb.csv","\ufeff"+csv,"text/csv");
 });
 function saveFile(name,text,type){
   var p=window.claude&&window.claude.use?Promise.resolve(window.claude.use("downloads")).catch(function(){return null}):Promise.resolve(null);
@@ -360,7 +360,7 @@ $("skdl").addEventListener("click",function(){
 
 /* ===== Impor CSV ===== */
 function parseCSV(t){
-  var lines=t.replace(/\r/g,"").split("\n").filter(function(l){return l.trim()});
+  var lines=t.replace(/^\ufeff/,"").replace(/\r/g,"").split("\n").filter(function(l){return l.trim()});
   if(!lines.length)return[];
   var d=[";","\t",","].filter(function(c){return lines[0].indexOf(c)>-1})[0]||",";
   return lines.map(function(l){var o=[],c="",q=false;for(var i=0;i<l.length;i++){var ch=l[i];if(ch=='"'){if(q&&l[i+1]=='"'){c+='"';i++}else q=!q}else if(ch===d&&!q){o.push(c.trim());c=""}else c+=ch}o.push(c.trim());return o});
@@ -368,7 +368,7 @@ function parseCSV(t){
 function toIso(s){s=String(s).trim();var m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return m[1]+"-"+("0"+m[2]).slice(-2)+"-"+("0"+m[3]).slice(-2);m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);if(m)return m[3]+"-"+("0"+m[2]).slice(-2)+"-"+("0"+m[1]).slice(-2);return""}
 function num(s){var n=String(s||"").replace(/[^0-9]/g,"");return n?+n:0}
 function nipOk(n){return /^\d{18}$/.test(String(n))}
-function fixNip(s){s=String(s==null?"":s).trim();return /^[\d\s]+$/.test(s)?s.replace(/\s+/g,""):s}
+function fixNip(s){s=String(s==null?"":s).trim();var m=s.match(/^=?"?(\d[\d\s]*)"?$/);return m?m[1].replace(/\s+/g,""):s}
 var impMode="";
 function openImp(m){
   impMode=m;$("imptxt").value="";$("impfile").value="";

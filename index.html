@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Dashboard Kenaikan Gaji Berkala</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6f7;--surface:#fff;--ink:#12262b;--muted:#5d7176;--line:#d9e2e4;--brand:#0f5c63;--brand-ink:#fff;--late:#b3261e;--late-bg:#fbe4e2;--soon:#8a5a00;--soon-bg:#fdefc9;--ok:#1d6b3a;--ok-bg:#dcf1e2;--bar:#0f5c63;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1a1d;--surface:#14262a;--ink:#e6f0f1;--muted:#93a9ad;--line:#26393d;--brand:#4fb3bb;--brand-ink:#08181a;--late:#ff8f86;--late-bg:#3b1a18;--soon:#f2c15b;--soon-bg:#3a2e0f;--ok:#7fd69a;--ok-bg:#16301f;--bar:#4fb3bb}}
+:root[data-theme="dark"]{--bg:#0d1a1d;--surface:#14262a;--ink:#e6f0f1;--muted:#93a9ad;--line:#26393d;--brand:#4fb3bb;--brand-ink:#08181a;--late:#ff8f86;--late-bg:#3b1a18;--soon:#f2c15b;--soon-bg:#3a2e0f;--ok:#7fd69a;--ok-bg:#16301f;--bar:#4fb3bb}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.5 "Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1120px;margin:0 auto;padding:20px 16px 48px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between;margin-bottom:20px}
+h1{font-size:clamp(1.5rem,3.4vw,2.1rem);line-height:1.15;margin:0;font-weight:800;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:4px 0 0}
+.btn{font:600 14px inherit;font-family:inherit;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:9px 14px;border-radius:8px;cursor:pointer}
+.btn:hover{border-color:var(--brand)}
+.btn:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+.btn.primary{background:var(--brand);color:var(--brand-ink);border-color:var(--brand)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;border-left:5px solid var(--brand)}
+.stat.late{border-left-color:var(--late)}.stat.soon{border-left-color:var(--soon)}
+.stat b{display:block;font-size:1.8rem;font-weight:800;line-height:1.1;margin-top:2px}
+.stat span{color:var(--muted);font-size:.85rem}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:16px}
+.panel h2{font-size:1.05rem;margin:0 0 12px;font-weight:700}
+.chart{display:grid;grid-template-columns:repeat(12,1fr);gap:6px;align-items:end;height:150px}
+.col{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%;gap:4px;font-size:.75rem;color:var(--muted)}
+.col i{display:block;width:100%;background:var(--bar);border-radius:4px 4px 0 0;min-height:2px}
+.col em{font-style:normal;color:var(--ink);font-weight:600}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+input,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;min-width:0}
+.tools input{flex:1 1 220px}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:760px}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:.8rem;color:var(--muted);font-weight:600}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.nm b{display:block}.nm small{color:var(--muted)}
+.badge{display:inline-block;padding:2px 10px;border-radius:99px;font-size:.78rem;font-weight:600;white-space:nowrap}
+.badge.late{background:var(--late-bg);color:var(--late)}.badge.soon{background:var(--soon-bg);color:var(--soon)}.badge.ok{background:var(--ok-bg);color:var(--ok)}
+.rowbtn{background:none;border:0;color:var(--brand);font:600 13px inherit;font-family:inherit;cursor:pointer;padding:4px}
+.rowbtn.del{color:var(--late)}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);padding:20px;width:min(480px,94vw)}
+dialog::backdrop{background:rgba(0,0,0,.5)}
+dialog h2{margin:0 0 12px}
+label{display:block;font-size:.85rem;font-weight:600;margin:10px 0 4px}
+dialog input,dialog select{width:100%}
+.hint{color:var(--muted);font-size:.8rem;margin:4px 0 0}
+.empty{padding:24px;text-align:center;color:var(--muted)}
+.foot{color:var(--muted);font-size:.8rem;margin-top:8px}
+#skwrap{position:fixed;inset:0;z-index:50;background:var(--bg);overflow:auto;padding-top:env(safe-area-inset-top,0px)}
+#skwrap[hidden]{display:none}
+.imps{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.impc{border:1px dashed var(--line);border-radius:10px;padding:14px}
+.impc h2{margin:0 0 4px}
+.impc p{margin:0 0 10px;color:var(--muted);font-size:.9rem}
+dialog textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.skbar{position:sticky;top:0;z-index:2;display:flex;gap:8px;flex-wrap:wrap;justify-content:space-between;align-items:center;padding:10px 16px;background:var(--surface);border-bottom:1px solid var(--line)}
+.skgrid{display:grid;grid-template-columns:minmax(260px,340px) 1fr;gap:16px;padding:16px;align-items:start}
+.skform{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px 14px 14px}
+.skform input,.skform textarea,.skform select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.skform h3{margin:12px 0 0;font-size:1rem}
+.sheetbox{overflow-x:auto}
+.skwarn{background:var(--soon-bg);color:var(--soon);border-radius:8px;padding:8px 10px;font-size:.82rem;margin-top:10px}
+@media (max-width:760px){.skgrid{grid-template-columns:1fr}}
+@media print{@page{size:A4;margin:18mm}body{background:#fff}.wrap,dialog,.skbar,.skform{display:none!important}#skwrap{position:static;overflow:visible;background:#fff}.skgrid{display:block;padding:0}.sheetbox{overflow:visible}.sheet{box-shadow:none!important;width:auto!important;min-height:0!important;padding:0!important;margin:0!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Dashboard Kenaikan Gaji Berkala</h1>
+    <p class="sub" id="today"></p>
+    <p class="sub">Dirancang oleh <b>MAKMUR NONCI</b>, Pengawas SD Kota Parepare</p>
+  </div>
+  <div class="actions">
+    <button class="btn" id="timp">Impor pegawai</button><button class="btn" id="ttab">Tabel gaji</button><button class="btn" id="bkp">Cadangkan JSON</button><button class="btn" id="csv">Ekspor CSV</button>
+    <button class="btn primary" id="add">Tambah pegawai</button>
+  </div>
+</header>
+
+<section class="stats" id="stats"></section>
+
+<section class="panel">
+  <div class="imps">
+    <div class="impc">
+      <h2>Data pegawai</h2>
+      <p id="empstat"></p>
+      <div class="actions"><button class="btn primary" id="timp2">Impor pegawai</button><button class="btn" id="tpl1">Unduh templat CSV</button><button class="btn" id="tpl1j">Templat JSON</button></div>
+    </div>
+    <div class="impc">
+      <h2>Tabel gaji pokok</h2>
+      <p id="tabstat"></p>
+      <div class="actions"><button class="btn primary" id="ttab2">Pasang tabel gaji</button><button class="btn" id="tpl2">Unduh templat CSV</button><button class="btn" id="tpl2j">Templat JSON</button></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel">
+  <h2>Jumlah KGB jatuh tempo, 12 bulan ke depan</h2>
+  <div class="chart" id="chart" role="img" aria-label="Grafik batang jumlah pegawai yang jatuh tempo KGB per bulan"></div>
+</section>
+
+<section class="panel">
+  <div class="tools">
+    <input id="q" type="search" placeholder="Cari nama atau NIP" aria-label="Cari nama atau NIP">
+    <select id="f" aria-label="Filter status">
+      <option value="all">Semua status</option>
+      <option value="late">Terlambat</option>
+      <option value="soon">Jatuh tempo ≤ 90 hari</option>
+      <option value="ok">Belum waktunya</option>
+    </select>
+  </div>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Pegawai</th><th>Golongan</th><th>TMT KGB terakhir</th><th>KGB berikutnya</th><th>Status</th><th class="num">Gaji lama</th><th class="num">Gaji baru</th><th></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+  </div>
+  <div class="empty" id="empty" hidden>Belum ada data yang cocok. Tambah pegawai atau ubah filter.</div>
+  <p class="foot">KGB dihitung setiap 2 tahun sejak TMT KGB terakhir. Gaji baru diambil dari tabel gaji pokok (masa kerja golongan + 2 tahun) jika tabel terpasang dan masa kerja diisi. Selain itu diestimasi naik 3% dan diberi tanda ~.</p>
+  <p class="foot" style="text-align:center;margin-top:16px">Aplikasi ini dirancang oleh MAKMUR NONCI, Pengawas SD Kota Parepare.</p>
+</section>
+</div>
+
+<dialog id="dlg">
+  <form method="dialog" id="form">
+    <h2 id="dtitle">Tambah pegawai</h2>
+    <label for="fn">Nama</label><input id="fn" required>
+    <label for="fi">NIP</label><input id="fi" required inputmode="numeric">
+    <label for="fg">Golongan / ruang</label>
+    <select id="fg"></select>
+    <label for="fm">Masa kerja golongan saat ini (tahun)</label><input id="fm" type="number" min="0" max="40">
+    <p class="hint">Dipakai mencari gaji baru di tabel gaji (masa kerja + 2 tahun).</p>
+    <label for="fd">TMT KGB terakhir</label><input id="fd" type="date" required>
+    <label for="fo">Gaji pokok saat ini (Rp)</label><input id="fo" type="number" min="0" step="1000" required>
+    <label for="fw">Gaji pokok baru (Rp)</label><input id="fw" type="number" min="0" step="1000">
+    <p class="hint">Opsional. Kosongkan untuk memakai tabel gaji (jika terpasang) atau estimasi 3%.</p>
+    <div class="actions" style="margin-top:16px;justify-content:flex-end">
+      <button class="btn" type="button" id="cancel">Batal</button>
+      <button class="btn primary" type="submit">Simpan</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="dimp">
+  <h2 id="imptitle"></h2>
+  <p class="hint" id="impfmt"></p>
+  <label for="impfile">Berkas CSV</label><input id="impfile" type="file" accept=".csv,.txt,.tsv,.json">
+  <label for="imptxt">Atau tempel isi CSV</label><textarea id="imptxt" rows="7"></textarea>
+  <p class="hint">Dari GitHub: buka berkas CSV atau JSON, klik Raw, salin semua isinya lalu tempel di sini. Atau unduh berkasnya dan pilih di atas.</p>
+  <div id="impmodew"><label for="impmode">Cara impor</label><select id="impmode"><option value="add">Tambahkan ke data yang ada</option><option value="replace">Ganti seluruh data</option></select></div>
+  <div class="actions" style="margin-top:16px;justify-content:flex-end">
+    <button class="btn" type="button" id="impclr">Hapus tabel</button>
+    <button class="btn" type="button" id="impcancel">Batal</button>
+    <button class="btn primary" type="button" id="impgo">Impor</button>
+  </div>
+</dialog>
+
+<div id="skwrap" hidden>
+  <div class="skbar">
+    <button class="btn" id="skclose">Kembali ke dashboard</button>
+    <div class="actions"><button class="btn" id="skdl">Unduh SK (HTML)</button><button class="btn primary" id="skprint">Cetak / simpan PDF</button></div>
+  </div>
+  <div class="skgrid">
+    <div class="skform" id="skform"></div>
+    <div class="sheetbox"><article class="sheet" id="sheet"></article></div>
+  </div>
+</div>
+
+<script>
+(function(){
+var KEY="kgb-data-v1";
+var GOL=["I/a","I/b","I/c","I/d","II/a","II/b","II/c","II/d","III/a","III/b","III/c","III/d","IV/a","IV/b","IV/c","IV/d","IV/e"];
+var MON=["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Agu","Sep","Okt","Nov","Des"];
+var $=function(id){return document.getElementById(id)};
+var rp=new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",maximumFractionDigits:0});
+var tgl=new Intl.DateTimeFormat("id-ID",{day:"numeric",month:"long",year:"numeric"});
+var now=new Date();now.setHours(0,0,0,0);
+var data=[],editId=null;
+
+function iso(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function parse(s){var p=s.split("-");return new Date(+p[0],+p[1]-1,+p[2])}
+function nextDue(s){var d=parse(s);d.setFullYear(d.getFullYear()+2);return d}
+function days(d){return Math.round((d-now)/864e5)}
+function status(e){var n=days(nextDue(e.tmt));return n<0?"late":n<=90?"soon":"ok"}
+var TAB_KEY="kgb-tabel-v1",tab=[];try{tab=JSON.parse(localStorage.getItem(TAB_KEY)||"[]")}catch(e){}
+function normG(s){return String(s).toLowerCase().replace(/[^a-z]/g,"")}
+function lookup(g,mk){var k=normG(g),best=null;tab.forEach(function(r){if(normG(r[0])===k&&r[1]<=mk&&(!best||r[1]>best[1]))best=r});return best?best[2]:null}
+function newSalary(e){
+  if(e.baru)return{v:e.baru,est:false};
+  if(e.mkg!=null&&tab.length){var v=lookup(e.gol,e.mkg+2);if(v)return{v:v,est:false}}
+  return{v:Math.round(e.lama*1.03/100)*100,est:true};
+}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+
+function sample(){
+  // TMT diatur relatif terhadap hari ini agar semua status terlihat
+  var offs=[-120,-20,15,40,75,110,160,230,300,380,520,640];
+  var names=["Siti Rahmawati","Andi Mappasessu","Nurhayati","Ahmad Fauzi","Dewi Anggraini","Muh. Arsyad","Ratna Sari","Budi Santoso","Hasanuddin","Lestari Putri","Yusuf Hamzah","Maya Kurniasih"];
+  var gol=["III/b","III/c","II/c","III/a","IV/a","III/d","II/d","III/b","IV/b","III/a","II/b","III/c"];
+  var gaji=[3300000,3450000,2800000,3100000,4100000,3900000,2950000,3300000,4400000,3100000,2700000,3450000];
+  return names.map(function(n,i){
+    var d=new Date(now);d.setFullYear(d.getFullYear()-2);d.setDate(d.getDate()+offs[i]);
+    return{id:"s"+i,nama:n,nip:"1985"+String(1010+i*37)+"2010"+(10+i)+"1001",gol:gol[i],tmt:iso(d),lama:gaji[i],baru:0};
+  });
+}
+function load(){try{var r=localStorage.getItem(KEY);if(r){data=JSON.parse(r);return}}catch(e){}data=sample()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}}
+
+function renderStats(){
+  var late=0,soon=0,extra=0;
+  data.forEach(function(e){var s=status(e);if(s!=="ok"){extra+=newSalary(e).v-e.lama}if(s==="late")late++;if(s==="soon")soon++});
+  var cards=[["Total pegawai",data.length,""],["Terlambat diproses",late,"late"],["Jatuh tempo ≤ 90 hari",soon,"soon"],["Tambahan gaji pokok per bulan",rp.format(extra),""]];
+  $("stats").innerHTML=cards.map(function(c){return '<div class="stat '+c[2]+'"><span>'+c[0]+'</span><b>'+c[1]+'</b></div>'}).join("");
+}
+function renderChart(){
+  var counts=[],labels=[],i;
+  for(i=0;i<12;i++){var m=new Date(now.getFullYear(),now.getMonth()+i,1);labels.push(MON[m.getMonth()]);counts.push(0)}
+  data.forEach(function(e){var d=nextDue(e.tmt);var idx=(d.getFullYear()-now.getFullYear())*12+d.getMonth()-now.getMonth();if(d<now)idx=0;if(idx>=0&&idx<12)counts[idx]++});
+  var mx=Math.max.apply(null,counts.concat([1]));
+  $("chart").innerHTML=counts.map(function(c,i){return '<div class="col"><em>'+(c||"")+'</em><i style="height:'+(c/mx*100*0.8)+'%"></i><span>'+labels[i]+'</span></div>'}).join("");
+}
+function renderRows(){
+  var q=$("q").value.trim().toLowerCase(),f=$("f").value;
+  var list=data.filter(function(e){return(!q||e.nama.toLowerCase().indexOf(q)>-1||e.nip.indexOf(q)>-1)&&(f==="all"||status(e)===f)})
+    .sort(function(a,b){return nextDue(a.tmt)-nextDue(b.tmt)});
+  $("empty").hidden=list.length>0;
+  $("rows").innerHTML=list.map(function(e){
+    var d=nextDue(e.tmt),n=days(d),s=status(e),ns=newSalary(e);
+    var lbl=s==="late"?"Terlambat "+(-n)+" hari":s==="soon"?(n===0?"Hari ini":n+" hari lagi"):Math.round(n/30)+" bulan lagi";
+    return '<tr><td class="nm"><b>'+esc(e.nama)+'</b><small'+(nipOk(e.nip)?'':' style="color:var(--late)"')+'>'+esc(e.nip)+(nipOk(e.nip)?'':' (NIP tidak valid, perbaiki lewat Ubah)')+'</small></td><td>'+esc(e.gol)+'</td><td>'+tgl.format(parse(e.tmt))+'</td><td>'+tgl.format(d)+'</td><td><span class="badge '+s+'">'+lbl+'</span></td><td class="num">'+rp.format(e.lama)+'</td><td class="num">'+(ns.est?"~":"")+rp.format(ns.v)+'</td><td class="num"><button class="rowbtn" data-s="'+e.id+'">Buat SK</button><button class="rowbtn" data-e="'+e.id+'">Ubah</button><button class="rowbtn del" data-d="'+e.id+'">Hapus</button></td></tr>';
+  }).join("");
+}
+function renderData(){
+  $("empstat").textContent=data.length?data.length+" pegawai tercatat. Impor lagi untuk menambah atau mengganti data.":"Belum ada data pegawai. Impor CSV daftar pegawai dari GitHub atau komputer Anda.";
+  var m=data.filter(function(e){return e.mkg!=null}).length;
+  $("tabstat").textContent=tab.length?tab.length+" baris terpasang. "+m+" dari "+data.length+" pegawai sudah punya masa kerja golongan.":"Belum terpasang. Impor tabel gaji agar gaji baru terhitung otomatis.";
+}
+function render(){renderStats();renderChart();renderRows();renderData()}
+
+$("today").textContent="Per "+tgl.format(now)+". Pantau jadwal KGB dan estimasi dampaknya pada gaji.";
+$("fg").innerHTML=GOL.map(function(g){return"<option>"+g+"</option>"}).join("");
+$("q").addEventListener("input",renderRows);
+$("f").addEventListener("change",renderRows);
+
+function openForm(e){
+  editId=e?e.id:null;
+  $("dtitle").textContent=e?"Ubah data pegawai":"Tambah pegawai";
+  $("fn").value=e?e.nama:"";$("fi").value=e?e.nip:"";$("fg").value=e?e.gol:"III/a";
+  $("fd").value=e?e.tmt:"";$("fm").value=e&&e.mkg!=null?e.mkg:"";$("fo").value=e?e.lama:"";$("fw").value=e&&e.baru?e.baru:"";
+  $("dlg").showModal();
+}
+$("add").addEventListener("click",function(){openForm(null)});
+$("cancel").addEventListener("click",function(){$("dlg").close()});
+$("form").addEventListener("submit",function(ev){
+  var rec={id:editId||"p"+Date.now(),nama:$("fn").value.trim(),nip:$("fi").value.trim(),gol:$("fg").value,tmt:$("fd").value,lama:+$("fo").value,baru:+$("fw").value||0,mkg:$("fm").value===""?null:+$("fm").value};
+  if(editId){data=data.map(function(e){return e.id===editId?rec:e})}else{data.push(rec)}
+  save();render();
+});
+$("rows").addEventListener("click",function(ev){
+  var t=ev.target;
+  if(t.dataset.e){openForm(data.filter(function(e){return e.id===t.dataset.e})[0])}
+  if(t.dataset.s){openSK(data.filter(function(e){return e.id===t.dataset.s})[0])}
+  if(t.dataset.d&&confirm("Hapus data pegawai ini?")){data=data.filter(function(e){return e.id!==t.dataset.d});save();render()}
+});
+$("csv").addEventListener("click",function(){
+  var rows=[["Nama","NIP","Golongan","TMT KGB terakhir","KGB berikutnya","Gaji lama","Gaji baru"]];
+  data.forEach(function(e){rows.push([e.nama,e.nip,e.gol,e.tmt,iso(nextDue(e.tmt)),e.lama,newSalary(e).v])});
+  var csv=rows.map(function(r){return r.map(function(c){return'"'+String(c).replace(/"/g,'""')+'"'}).join(",")}).join("\n");
+  saveFile("kgb.csv",csv,"text/csv");
+});
+function saveFile(name,text,type){
+  var p=window.claude&&window.claude.use?window.claude.use("downloads"):Promise.resolve(null);
+  p.then(function(d){
+    if(!d){alert("Unduhan tidak tersedia di tampilan ini. Buka artifact di claude.ai.");return}
+    return d.save({filename:name,data:new Blob([text],{type:type})});
+  }).catch(function(){});
+}
+
+/* ===== SK KGB ===== */
+var SK_KEY="kgb-sk-v1",SC=".sheet{background:#fff;color:#000;font:12pt/1.45 'Times New Roman',Times,serif;width:210mm;max-width:100%;min-height:297mm;padding:18mm;margin:0 auto;box-shadow:0 2px 12px rgba(0,0,0,.25)}.sheet .kop{display:flex;align-items:center;gap:12px;border-bottom:3px double #000;padding-bottom:8px;margin-bottom:14px}.sheet .kop img{width:22mm;height:auto;flex:none}.sheet .kop:has(img)::after{content:'';width:22mm;flex:none}.sheet .kt{flex:1;text-align:center}.sheet .kt b{display:block;text-transform:uppercase}.sheet .kt span{display:block;font-size:.85em}.sheet .jd{text-align:center;font-weight:700;margin:10px 0 14px}.sheet table{border-collapse:collapse;min-width:0;width:100%}.sheet td{border:0;padding:1px 4px;vertical-align:top;text-align:left;font-size:inherit}.sheet td:first-child{width:38%}.sheet td:nth-child(2){width:14px}.sheet p{margin:6px 0;text-align:justify}.sheet .ttd{margin:18px 0 0 55%;text-align:left}.sheet .sp{height:64px}.sheet .tb{font-size:.92em;margin-top:14px}";
+var st=document.createElement("style");st.textContent=SC;document.head.appendChild(st);
+var SKF=[["daerah","Pemerintah daerah","PEMERINTAH KOTA PAREPARE"],["alamat","Alamat dinas",""],["email","Email dinas",""],["kota","Kota penandatangan","Parepare"],["no","Nomor SK","800.1.11/    /KGB/DISDIKPORA/"+now.getFullYear()],["tgl","Tanggal SK","date"],["kepala","Nama Kepala Dinas",""],["pangkat","Pangkat / golongan Kepala Dinas",""],["nipk","NIP Kepala Dinas",""],["jab","Jabatan pegawai",""],["unit","Unit kerja",""],["mk","Masa kerja golongan (tahun)",""],["dasar","Dasar SK terakhir (nomor dan tanggal)",""],["hukum","Dasar hukum (Mengingat)","area"],["tembusan","Tembusan (satu tujuan per baris)","area"]];
+var SIGNER=["daerah","alamat","email","kota","kepala","pangkat","nipk","hukum","tembusan"];
+var skv={},skEmp=null;
+function skDefaults(){
+  var v={};SKF.forEach(function(f){v[f[0]]=(f[2]==="date"||f[2]==="area")?"":f[2]});
+  v.tgl=iso(now);
+  v.tembusan="Kepala Badan Kepegawaian dan Pengembangan Sumber Daya Manusia\nBendahara Pengeluaran\nYang bersangkutan";
+  v.hukum="Peraturan Pemerintah tentang Peraturan Gaji Pegawai Negeri Sipil yang berlaku (periksa nomor dan tahun peraturan terbaru)";
+  try{var s=JSON.parse(localStorage.getItem(SK_KEY)||"{}");SIGNER.forEach(function(k){if(s[k])v[k]=s[k]})}catch(e){}
+  return v;
+}
+var FONTS=[["Times New Roman","'Times New Roman',Times,serif"],["Arial","Arial,Helvetica,sans-serif"],["Bookman Old Style","'Bookman Old Style',Bookman,Georgia,serif"],["Calibri","Calibri,Carlito,Arial,sans-serif"],["Cambria","Cambria,Georgia,serif"],["Tahoma","Tahoma,Verdana,sans-serif"]];
+var fsel={f:0,s:12};try{var fs=JSON.parse(localStorage.getItem("kgb-font-v1")||"null");if(fs)fsel=fs}catch(e){}
+function fontCss(){var f=FONTS[fsel.f]||FONTS[0];return"font-family:"+f[1]+";font-size:"+fsel.s+"pt"}
+var logo="";try{logo=localStorage.getItem("kgb-logo-v1")||""}catch(e){}
+function onLogo(ev){
+  var f=ev.target.files[0];if(!f)return;
+  var rd=new FileReader();
+  rd.onload=function(){var im=new Image();im.onload=function(){
+    var s=Math.min(1,300/Math.max(im.width,im.height)),c=document.createElement("canvas");
+    c.width=Math.round(im.width*s);c.height=Math.round(im.height*s);c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+    logo=c.toDataURL("image/png");try{localStorage.setItem("kgb-logo-v1",logo)}catch(x){}
+    drawSheet();
+  };im.src=rd.result};
+  rd.readAsDataURL(f);
+}
+function tembus(){var l=(skv.tembusan||"").split("\n").map(function(s){return s.trim().replace(/[;.]$/,"")}).filter(Boolean);if(!l.length)return"........";return l.map(function(s,i){return(i+1)+". "+esc(s)+(i<l.length-1?";":".")}).join("<br>")}
+function sheetHTML(e){
+  var tm=nextDue(e.tmt),nx=nextDue(iso(tm)),ns=newSalary(e);
+  function g(k){return skv[k]?esc(skv[k]):"........"}
+  function r(a,b){return"<tr><td>"+a+"</td><td>:</td><td>"+b+"</td></tr>"}
+  var tg=skv.tgl?tgl.format(parse(skv.tgl)):"........";
+  return '<div class="kop">'+(logo?'<img src="'+logo+'" alt="Logo">':'')+'<div class="kt"><b>'+g("daerah")+'</b><b>Dinas Pendidikan, Kepemudaan dan Olahraga</b><span>'+g("alamat")+'</span><span>Email: '+g("email")+'</span></div></div>'
+  +'<div class="jd">KEPUTUSAN KEPALA DINAS PENDIDIKAN, KEPEMUDAAN DAN OLAHRAGA<br>NOMOR: '+g("no")+'<br><br>TENTANG<br>KENAIKAN GAJI BERKALA PEGAWAI NEGERI SIPIL</div>'
+  +'<p><b>KEPALA DINAS PENDIDIKAN, KEPEMUDAAN DAN OLAHRAGA,</b></p>'
+  +'<table>'+r("Menimbang","bahwa Pegawai Negeri Sipil yang namanya tercantum dalam keputusan ini telah memenuhi syarat untuk diberikan kenaikan gaji berkala.")+r("Mengingat",g("hukum")+".")+r("Dasar","Surat keputusan gaji/kenaikan gaji berkala terakhir: "+g("dasar")+".")+'</table>'
+  +'<div class="jd" style="margin:12px 0">MEMUTUSKAN</div>'
+  +'<table>'+r("Menetapkan","KEPUTUSAN KEPALA DINAS PENDIDIKAN, KEPEMUDAAN DAN OLAHRAGA TENTANG KENAIKAN GAJI BERKALA PEGAWAI NEGERI SIPIL.")+'</table>'
+  +'<p><b>KESATU</b> : Memberikan kenaikan gaji berkala kepada Pegawai Negeri Sipil:</p>'
+  +'<table style="margin-left:18px;width:calc(100% - 18px)">'+r("Nama",esc(e.nama))+r("NIP",esc(e.nip))+r("Pangkat / golongan ruang",esc(e.gol))+r("Jabatan",g("jab"))+r("Unit kerja",g("unit"))
+  +r("Gaji pokok lama",rp.format(e.lama))+r("Gaji pokok baru","<b>"+rp.format(ns.v)+"</b>")+r("Masa kerja golongan",g("mk")+" tahun")+r("Terhitung mulai tanggal",tgl.format(tm))+r("Kenaikan gaji berkala berikutnya",tgl.format(nx))+'</table>'
+  +'<p><b>KEDUA</b> : Keputusan ini berlaku sejak tanggal ditetapkan, dengan ketentuan apabila di kemudian hari terdapat kekeliruan akan diadakan perbaikan sebagaimana mestinya.</p>'
+  +'<div class="ttd">Ditetapkan di '+g("kota")+'<br>pada tanggal '+tg+'<br><b>KEPALA DINAS PENDIDIKAN, KEPEMUDAAN DAN OLAHRAGA,</b><div class="sp"></div><u><b>'+g("kepala")+'</b></u><br>'+g("pangkat")+'<br>NIP. '+g("nipk")+'</div>'
+  +'<div class="tb">Tembusan:<br>'+tembus()+'</div>';
+}
+function drawSheet(){$("sheet").setAttribute("style",fontCss());$("sheet").innerHTML=sheetHTML(skEmp);var w=$("skwarn");if(w)w.hidden=!newSalary(skEmp).est}
+function openSK(e){
+  skEmp=e;skv=skDefaults();if(e.mkg!=null)skv.mk=String(e.mkg+2);
+  var h='<h3>Isi SK untuk '+esc(e.nama)+'</h3><p class="hint">Pratinjau di kanan ikut berubah saat Anda mengetik.</p><div class="skwarn" id="skwarn">Gaji pokok baru masih estimasi 3%. Pasang tabel gaji dan isi masa kerja golongan, atau isi gaji baru lewat tombol Ubah, sebelum SK dicetak.</div><label for="sk_logo">Logo Pemerintah Kota Parepare</label><input id="sk_logo" type="file" accept="image/*"><p class="hint">Unggah sekali, tersimpan di browser ini dan dipakai untuk semua SK.</p><label for="sk_font">Jenis huruf</label><select id="sk_font">'+FONTS.map(function(f,i){return'<option value="'+i+'">'+f[0]+'</option>'}).join("")+'</select><label for="sk_size">Ukuran huruf</label><select id="sk_size">'+[10,11,12,13,14].map(function(n){return'<option value="'+n+'">'+n+' pt</option>'}).join("")+'</select>';
+  SKF.forEach(function(f){
+    h+='<label for="sk_'+f[0]+'">'+f[1]+'</label>';
+    h+=f[2]==="area"?'<textarea id="sk_'+f[0]+'" rows="3"></textarea>':'<input id="sk_'+f[0]+'" type="'+(f[2]==="date"?"date":"text")+'">';
+  });
+  $("skform").innerHTML=h;
+  $("sk_logo").addEventListener("change",onLogo);
+  $("sk_font").value=fsel.f;$("sk_size").value=fsel.s;
+  ["sk_font","sk_size"].forEach(function(id){$(id).addEventListener("change",function(){fsel={f:+$("sk_font").value,s:+$("sk_size").value};try{localStorage.setItem("kgb-font-v1",JSON.stringify(fsel))}catch(x){}drawSheet()})});
+  SKF.forEach(function(f){var el=$("sk_"+f[0]);el.value=skv[f[0]];el.addEventListener("input",function(){
+    skv[f[0]]=el.value;drawSheet();
+    if(SIGNER.indexOf(f[0])>-1){try{var s={};SIGNER.forEach(function(k){s[k]=skv[k]});localStorage.setItem(SK_KEY,JSON.stringify(s))}catch(x){}}
+  })});
+  drawSheet();$("skwrap").hidden=false;document.body.style.overflow="hidden";
+}
+$("skclose").addEventListener("click",function(){$("skwrap").hidden=true;document.body.style.overflow=""});
+$("skprint").addEventListener("click",function(){try{window.print()}catch(e){alert("Cetak tidak tersedia di tampilan ini. Gunakan Unduh SK (HTML), lalu cetak dari browser.")}});
+$("skdl").addEventListener("click",function(){
+  var doc='<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><title>SK KGB '+esc(skEmp.nama)+'</title><style>body{margin:0;background:#eee}'+SC+'@media print{body{background:#fff}.sheet{box-shadow:none;margin:0}@page{size:A4;margin:0}}</style></head><body><article class="sheet" style="'+fontCss()+'">'+sheetHTML(skEmp)+'</article></body></html>';
+  saveFile("SK-KGB-"+skEmp.nama.replace(/[^A-Za-z0-9]+/g,"-")+".html",doc,"text/html");
+});
+
+/* ===== Impor CSV ===== */
+function parseCSV(t){
+  var lines=t.replace(/\r/g,"").split("\n").filter(function(l){return l.trim()});
+  if(!lines.length)return[];
+  var d=[";","\t",","].filter(function(c){return lines[0].indexOf(c)>-1})[0]||",";
+  return lines.map(function(l){var o=[],c="",q=false;for(var i=0;i<l.length;i++){var ch=l[i];if(ch=='"'){if(q&&l[i+1]=='"'){c+='"';i++}else q=!q}else if(ch===d&&!q){o.push(c.trim());c=""}else c+=ch}o.push(c.trim());return o});
+}
+function toIso(s){s=String(s).trim();var m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);if(m)return m[1]+"-"+("0"+m[2]).slice(-2)+"-"+("0"+m[3]).slice(-2);m=s.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/);if(m)return m[3]+"-"+("0"+m[2]).slice(-2)+"-"+("0"+m[1]).slice(-2);return""}
+function num(s){var n=String(s||"").replace(/[^0-9]/g,"");return n?+n:0}
+function nipOk(n){return /^\d{18}$/.test(String(n))}
+function fixNip(s){s=String(s==null?"":s).trim();return /^[\d\s]+$/.test(s)?s.replace(/\s+/g,""):s}
+var impMode="";
+function openImp(m){
+  impMode=m;$("imptxt").value="";$("impfile").value="";
+  $("imptitle").textContent=m==="emp"?"Impor data pegawai":"Pasang tabel gaji pokok";
+  $("impfmt").textContent=m==="emp"?"Urutan kolom: nama, nip, golongan, tmt_kgb_terakhir, gaji_pokok, masa_kerja_golongan. Baris judul boleh ada. Format tanggal: 2024-03-01 atau 01/03/2024. Di Excel, format kolom NIP sebagai Teks sebelum mengisi agar NIP 18 digit tidak berubah menjadi 1,9851E+18.":"Urutan kolom: golongan, masa_kerja_tahun, gaji_pokok. Contoh: III/b,10,3500000. Tabel tersimpan di browser ini."+(tab.length?" Saat ini terpasang "+tab.length+" baris.":"");
+  $("impmodew").hidden=m!=="emp";$("impclr").hidden=m==="emp"||!tab.length;
+  $("dimp").showModal();
+}
+$("timp").addEventListener("click",function(){openImp("emp")});
+$("ttab").addEventListener("click",function(){openImp("tab")});
+$("impcancel").addEventListener("click",function(){$("dimp").close()});
+$("impfile").addEventListener("change",function(ev){var f=ev.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){$("imptxt").value=rd.result};rd.readAsText(f)});
+$("impclr").addEventListener("click",function(){if(confirm("Hapus tabel gaji dari browser ini?")){tab=[];try{localStorage.removeItem(TAB_KEY)}catch(e){}render();$("dimp").close()}});
+$("impgo").addEventListener("click",function(){
+  var raw=$("imptxt").value.trim(),ok=[],bad=0,js=null,rows;
+  function tabRows(L){return L.map(function(o){return Array.isArray(o)?o:[o.golongan||o.gol,o.masa_kerja_tahun!=null?o.masa_kerja_tahun:o.masa_kerja,o.gaji_pokok!=null?o.gaji_pokok:o.gaji]})}
+  if(/^[\[{]/.test(raw)){try{js=JSON.parse(raw)}catch(x){alert("JSON tidak valid. Periksa tanda kurung dan koma.");return}}
+  if(js){
+    var L=Array.isArray(js)?js:((impMode==="emp"?js.pegawai:js.tabelGaji)||[]);
+    rows=impMode==="emp"?L.map(function(o){return[o.nama,o.nip||"",o.gol||o.golongan,o.tmt||o.tmt_kgb_terakhir,String(o.lama!=null?o.lama:(o.gaji_pokok||0)),o.mkg!=null?String(o.mkg):(o.masa_kerja_golongan!=null?String(o.masa_kerja_golongan):""),String(o.baru||o.gaji_baru||0)]}):tabRows(L).map(function(a){return[String(a[0]),String(a[1]),String(a[2])]});
+  }else rows=parseCSV(raw);
+  if(impMode==="emp"){
+    rows.forEach(function(r,i){var t=toIso(r[3]||"");if(!r[0]||!t){if(i>0)bad++;return}
+      ok.push({id:"i"+Date.now()+"_"+i,nama:r[0],nip:fixNip(r[1]),gol:r[2]||"III/a",tmt:t,lama:num(r[4]),baru:num(r[6]),mkg:/^\s*\d+/.test(r[5]||"")?num(r[5]):null})});
+    if(!ok.length){alert("Tidak ada baris valid. Periksa urutan kolom dan format tanggal.");return}
+    data=$("impmode").value==="replace"?ok:data.concat(ok);save();
+    if(js&&!Array.isArray(js)){
+      if(js.tabelGaji&&js.tabelGaji.length){tab=tabRows(js.tabelGaji).map(function(a){return[String(a[0]),+a[1],num(a[2])]});try{localStorage.setItem(TAB_KEY,JSON.stringify(tab))}catch(e){}}
+      if(js.ttd){try{localStorage.setItem(SK_KEY,JSON.stringify(js.ttd))}catch(e){}}
+    }
+  }else{
+    rows.forEach(function(r,i){if(!/^\s*\d+\s*$/.test(r[1]||"")||!num(r[2])){if(i>0)bad++;return}ok.push([r[0].trim(),+r[1],num(r[2])])});
+    if(!ok.length){alert("Tidak ada baris valid. Periksa urutan kolom: golongan, masa kerja, gaji pokok.");return}
+    tab=ok;try{localStorage.setItem(TAB_KEY,JSON.stringify(tab))}catch(e){}
+  }
+  render();$("dimp").close();
+  var sci=ok.filter(function(x){return x.nip&&/e\+/i.test(x.nip)}).length;
+  alert(ok.length+" baris berhasil diimpor"+(bad?", "+bad+" baris dilewati karena tidak valid.":".")+(sci?"\n\nPeringatan: "+sci+" NIP rusak karena Excel mengubahnya ke notasi ilmiah (contoh 1,9851E+18). Angka aslinya sudah hilang di berkas itu. Format kolom NIP sebagai Teks di Excel lalu ekspor ulang, atau perbaiki NIP lewat tombol Ubah.":""));
+});
+
+$("timp2").addEventListener("click",function(){openImp("emp")});
+$("ttab2").addEventListener("click",function(){openImp("tab")});
+$("tpl1").addEventListener("click",function(){saveFile("templat-pegawai.csv","nama,nip,golongan,tmt_kgb_terakhir,gaji_pokok,masa_kerja_golongan\nContoh Nama,198501012010011001,III/b,2024-03-01,3500000,10\n","text/csv")});
+$("tpl2").addEventListener("click",function(){saveFile("templat-tabel-gaji.csv","golongan,masa_kerja_tahun,gaji_pokok\nIII/b,10,3500000\n","text/csv")});
+
+$("bkp").addEventListener("click",function(){
+  var ttd={};try{ttd=JSON.parse(localStorage.getItem(SK_KEY)||"{}")}catch(e){}
+  saveFile("kgb-cadangan.json",JSON.stringify({versi:1,dibuat:iso(now),pegawai:data,tabelGaji:tab,ttd:ttd},null,2),"application/json");
+});
+$("tpl1j").addEventListener("click",function(){saveFile("templat-pegawai.json",JSON.stringify([{nama:"Contoh Nama",nip:"198501012010011001",golongan:"III/b",tmt_kgb_terakhir:"2024-03-01",gaji_pokok:3500000,masa_kerja_golongan:10}],null,2),"application/json")});
+$("tpl2j").addEventListener("click",function(){saveFile("templat-tabel-gaji.json",JSON.stringify([{golongan:"III/b",masa_kerja_tahun:10,gaji_pokok:3500000}],null,2),"application/json")});
+
+load();render();
+})();
+</script>
+</body>
+</html>

@@ -74,7 +74,7 @@ dialog textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);bo
 .sheetbox{overflow-x:auto}
 .skwarn{background:var(--soon-bg);color:var(--soon);border-radius:8px;padding:8px 10px;font-size:.82rem;margin-top:10px}
 @media (max-width:760px){.skgrid{grid-template-columns:1fr}}
-@media print{@page{size:215mm 330mm;margin:5mm 20mm 17mm 25.4mm}body{background:#fff}.wrap,dialog,.skbar,.skform{display:none!important}#skwrap{position:static;overflow:visible;background:#fff}.skgrid{display:block;padding:0}.sheetbox{overflow:visible}.sheet{box-shadow:none!important;width:auto!important;min-height:0!important;padding:0!important;margin:0!important}}
+@media print{@page{size:215mm 330mm;margin:5mm 10mm 17mm 18mm}body{background:#fff}.wrap,dialog,.skbar,.skform{display:none!important}#skwrap{position:static;overflow:visible;background:#fff}.skgrid{display:block;padding:0}.sheetbox{overflow:visible}.sheet{box-shadow:none!important;width:auto!important;min-height:0!important;padding:0!important;margin:0!important}}
 </style>
 </head>
 <body>
@@ -177,7 +177,7 @@ dialog textarea{width:100%;font:inherit;color:var(--ink);background:var(--bg);bo
 <div id="skwrap" hidden>
   <div class="skbar">
     <button class="btn" id="skclose">Kembali ke dashboard</button>
-    <div class="actions"><button class="btn" id="skdl">Unduh SK (HTML)</button><button class="btn primary" id="skprint">Cetak / simpan PDF</button></div>
+    <div class="actions"><button class="btn" id="skdocx">Unduh Word (.docx)</button><button class="btn" id="skdl">Unduh SK (HTML)</button><button class="btn primary" id="skprint">Cetak / simpan PDF</button></div>
   </div>
   <div class="skgrid">
     <div class="skform" id="skform"></div>
@@ -299,7 +299,7 @@ function saveFile(name,text,type){
 }
 
 /* ===== SK KGB ===== */
-var SK_KEY="kgb-sk-v2",SC=".sheet{background:#fff;color:#000;font:11pt/1.4 Tahoma,Verdana,sans-serif;width:215mm;max-width:100%;min-height:330mm;padding:5mm 20mm 17mm 25.4mm;margin:0 auto;box-shadow:0 2px 12px rgba(0,0,0,.25);box-sizing:border-box}.sheet .kop{display:flex;align-items:center;gap:8px;border-bottom:4px double #000;padding-bottom:6px;margin:0 -10mm 12px -7mm}.sheet .kop img{width:19mm;height:auto;flex:none}.sheet .kop:has(img)::after{content:'';width:19mm;flex:none}.sheet .kt{flex:1;text-align:center;line-height:1.25}.sheet .kt b{display:block;text-transform:uppercase}.sheet .kt .k1{font-size:1.25em}.sheet .kt .k2{font-size:1.4em}.sheet .kt span{display:block;font-size:.82em}.sheet .tgl{margin:10px 0 4px 54%}.sheet .hd{display:flex;margin-bottom:12px}.sheet .hl{width:54%}.sheet .hr{width:46%}.sheet .hl div{display:flex}.sheet .hl span:first-child{width:22mm;flex:none}.sheet .hl span:nth-child(2){width:5mm;flex:none}.sheet .hl span:nth-child(3){flex:1}.sheet .yth{display:flex}.sheet .yth span:first-child{width:9mm;flex:none}.sheet .p{margin:6px 0 6px 25mm;text-align:justify}.sheet table.ls{border-collapse:collapse;min-width:0;width:calc(100% - 28mm);margin:2px 0 2px 28mm}.sheet table.ls td{border:0;padding:1px 0;vertical-align:top;text-align:left;font-size:inherit}.sheet table.ls td:nth-child(1){width:8mm}.sheet table.ls td:nth-child(2){width:41mm}.sheet table.ls td:nth-child(3){width:4mm}.sheet .ttd{margin:14px 0 0 54%}.sheet .sp{height:22mm}.sheet .tb{font-size:.95em;margin-top:14px}.sheet .tm{display:flex;text-align:justify}.sheet .tm span:first-child{width:7mm;flex:none}";
+var SK_KEY="kgb-sk-v2",SC=".sheet{background:#fff;color:#000;font:11pt/1.3 Tahoma,Verdana,sans-serif;width:215mm;max-width:100%;min-height:330mm;padding:5mm 10mm 17mm 18mm;margin:0 auto;box-shadow:0 2px 12px rgba(0,0,0,.25);box-sizing:border-box}.sheet .kop{display:flex;align-items:center;gap:8px;border-bottom:4px double #000;padding-bottom:6px;margin:0 0 12px 0}.sheet .bd{padding:0 10mm 0 7.4mm}.sheet .kop img{width:19mm;height:auto;flex:none}.sheet .kop:has(img)::after{content:'';width:19mm;flex:none}.sheet .kt{flex:1;text-align:center;line-height:1.25}.sheet .kt b{display:block;text-transform:uppercase}.sheet .kt .k1{font-size:1.25em}.sheet .kt .k2{font-size:1.4em}.sheet .kt span{display:block;font-size:.82em}.sheet .tgl{margin:10px 0 4px 54%}.sheet .hd{display:flex;margin-bottom:12px}.sheet .hl{width:54%}.sheet .hr{width:46%}.sheet .hl div{display:flex}.sheet .hl span:first-child{width:22mm;flex:none}.sheet .hl span:nth-child(2){width:5mm;flex:none}.sheet .hl span:nth-child(3){flex:1}.sheet .yth{display:flex}.sheet .yth span:first-child{width:9mm;flex:none}.sheet .p{margin:6px 0 6px 25mm;text-align:justify}.sheet table.ls{border-collapse:collapse;min-width:0;width:calc(100% - 28mm);margin:2px 0 2px 28mm}.sheet table.ls td{border:0;padding:1px 0;vertical-align:top;text-align:left;font-size:inherit}.sheet table.ls td:nth-child(1){width:8mm}.sheet table.ls td:nth-child(2){width:41mm}.sheet table.ls td:nth-child(3){width:4mm}.sheet .ttd{margin:14px 0 0 54%}.sheet .sp{height:16mm}.sheet .tb{font-size:.95em;margin-top:8px}.sheet .tm{display:flex;text-align:justify}.sheet .tm span:first-child{width:7mm;flex:none}";
 var st=document.createElement("style");st.textContent=SC;document.head.appendChild(st);
 var SKF=[["daerah","Pemerintah daerah","PEMERINTAH KOTA PAREPARE"],["alamat","Alamat dinas","Jalan Pettana Rajeng No. 1 Tlp. (0421) 21166 Parepare 91114"],["email","Email dinas","dinaspendidikan@pareparekota.go.id"],["kota","Kota (tempat surat dibuat)","Parepare"],["tgl","Tanggal surat","date"],["no","Nomor surat","800.1.11.13/      /Disdikpora/"+now.getFullYear()],["lamp","Lampiran","-"],["kepada","Kepada Yth.","Kepala Badan Pengelolaan Keuangan dan Pendapatan Daerah Kota Parepare"],["tujuan","Tempat tujuan (di-)","Parepare"],["jab","Jabatan pegawai",""],["unit","Unit kerja",""],["oleh","SK terakhir: oleh pejabat","Kepala Dinas Pendidikan, Kepemudaan dan Olahraga"],["dnomor","SK terakhir: nomor",""],["dtgl","SK terakhir: tanggal","date"],["tmtgol","TMT golongan ruang gaji","date"],["penutup","Kalimat penutup","area"],["ttdjab","Jabatan penandatangan (mis. KEPALA,)","KEPALA DINAS,"],["kepala","Nama penandatangan","MARDIAH, S.Pd., M.Pd."],["pangkat","Pangkat / golongan (kosongkan jika tidak dipakai)","Pembina Utama Muda (IV/c)"],["nipk","NIP (kosongkan jika tidak dipakai)","198009062002122005"],["tembusan","Tembusan (satu tujuan per baris, {unit} = unit kerja pegawai)","area"]];
 var SIGNER=["daerah","alamat","email","kota","lamp","kepada","tujuan","oleh","penutup","ttdjab","kepala","pangkat","nipk","tembusan"];
@@ -341,11 +341,12 @@ function terbilang(n){
 var PANGKAT={"i/a":"Juru Muda","i/b":"Juru Muda Tk. I","i/c":"Juru","i/d":"Juru Tk. I","ii/a":"Pengatur Muda","ii/b":"Pengatur Muda Tk. I","ii/c":"Pengatur","ii/d":"Pengatur Tk. I","iii/a":"Penata Muda","iii/b":"Penata Muda Tk. I","iii/c":"Penata","iii/d":"Penata Tk. I","iv/a":"Pembina","iv/b":"Pembina Tk. I","iv/c":"Pembina Utama Muda","iv/d":"Pembina Utama Madya","iv/e":"Pembina Utama"};
 function pangkatOf(g){var n=PANGKAT[String(g).toLowerCase().replace(/\s/g,"")];return n?n+", "+g:g}
 function mkt(y,b){return(y==null||y==="")?"........":String(y).padStart(2,"0")+" Tahun "+String(b||0).padStart(2,"0")+" Bulan"}
-function tembus(){
+function tembusLines(){
   var u=skv.unit||"........";
   var l=(skv.tembusan||"").split("\n").map(function(x){return x.trim().replace(/[;.]$/,"").replace(/\{unit\}/g,u)}).filter(Boolean);
-  return l.map(function(x,i){var z=i===l.length-1?".":(i===l.length-2?"; dan":";");return'<div class="tm"><span>'+(i+1)+'.</span><span>'+esc(x)+z+'</span></div>'}).join("");
+  return l.map(function(x,i){return x+(i===l.length-1?".":(i===l.length-2?"; dan":";"))});
 }
+function tembus(){return tembusLines().map(function(x,i){return'<div class="tm"><span>'+(i+1)+'.</span><span>'+esc(x)+'</span></div>'}).join("")}
 function sheetHTML(e){
   var tm=nextDue(e.tmt),nx=nextDue(iso(tm)),ns=newSalary(e),mb=e.mkb||0;
   function g(k){return skv[k]?esc(skv[k]):"........"}
@@ -353,7 +354,7 @@ function sheetHTML(e){
   var tg=skv.tgl?tgl.format(parse(skv.tgl)):"........";
   var gol=esc(e.gol)+(skv.tmtgol?" ( "+dpi(skv.tmtgol)+" )":"");
   return '<div class="kop">'+(logo?'<img src="'+logo+'" alt="Logo">':'')+'<div class="kt"><b class="k1">'+g("daerah")+'</b><b class="k2">Dinas Pendidikan, Kepemudaan dan Olahraga</b><span>'+g("alamat")+'</span><span>E-mail : '+g("email")+'</span></div></div>'
-  +'<div class="tgl">'+g("kota")+', '+tg+'</div>'
+  +'<div class="bd"><div class="tgl">'+g("kota")+', '+tg+'</div>'
   +'<div class="hd"><div class="hl"><div><span>Nomor</span><span>:</span><span>'+g("no")+'</span></div><div><span>Lampiran</span><span>:</span><span>'+g("lamp")+'</span></div><div><span>Perihal</span><span>:</span><span>Surat Pemberitahuan Kenaikan Gaji Berkala <u>Pegawai Negeri Sipil</u></span></div></div>'
   +'<div class="hr">Kepada<div class="yth"><span>Yth.</span><span>'+g("kepada")+'</span></div><div>di-</div><div style="margin-left:9mm"><u>'+g("tujuan")+'</u></div></div></div>'
   +'<p class="p">Dengan ini diberitahukan, bahwa berhubung telah dipenuhinya masa kerja dan syarat-syarat lainnya sebagai Pegawai Negeri Sipil :</p>'
@@ -364,7 +365,7 @@ function sheetHTML(e){
   +'<table class="ls">'+r("7.","Gaji Pokok Baru",rp0(ns.v)+" <i>("+terbilang(ns.v)+")</i>")+r("8.","Masa Kerja Golongan",e.mkg!=null?mkt(e.mkg+2,mb):"........")+r("9.","Golongan Ruang Gaji",gol)+r("10.","Terhitung Mulai Tgl.",dp(tm))+r("11.","KGB berikutnya",dp(nx))+'</table>'
   +'<p class="p">'+g("penutup")+'</p>'
   +'<div class="ttd">'+(skv.ttdjab?esc(skv.ttdjab):'')+'<div class="sp"></div><b>'+g("kepala")+'</b>'+(skv.pangkat?'<br>'+esc(skv.pangkat):'')+(skv.nipk?'<br>NIP. '+esc(skv.nipk):'')+'</div>'
-  +'<div class="tb">Tembusan disampaikan kepada Yth :'+tembus()+'</div>';
+  +'<div class="tb">Tembusan disampaikan kepada Yth :'+tembus()+'</div></div>';
 }
 function drawSheet(){$("sheet").setAttribute("style",fontCss());$("sheet").innerHTML=sheetHTML(skEmp);var w=$("skwarn");if(w)w.hidden=!newSalary(skEmp).est}
 function openSK(e){
@@ -384,10 +385,89 @@ function openSK(e){
   })});
   drawSheet();$("skwrap").hidden=false;document.body.style.overflow="hidden";
 }
+/* ===== Unduh Word (.docx) tanpa pustaka luar ===== */
+function crc32(b){var t=crc32.t;if(!t){t=crc32.t=[];for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}}var c=0xFFFFFFFF;for(var i=0;i<b.length;i++)c=t[(c^b[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
+function zipFiles(files){
+  var enc=new TextEncoder(),parts=[],cd=[],off=0;
+  files.forEach(function(f){
+    var nm=enc.encode(f.name),crc=crc32(f.data),sz=f.data.length,h=new DataView(new ArrayBuffer(30)),c=new DataView(new ArrayBuffer(46));
+    h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x0800,true);h.setUint16(12,0x21,true);h.setUint32(14,crc,true);h.setUint32(18,sz,true);h.setUint32(22,sz,true);h.setUint16(26,nm.length,true);
+    parts.push(new Uint8Array(h.buffer),nm,f.data);
+    c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint16(14,0x21,true);c.setUint32(16,crc,true);c.setUint32(20,sz,true);c.setUint32(24,sz,true);c.setUint16(28,nm.length,true);c.setUint32(42,off,true);
+    cd.push(new Uint8Array(c.buffer),nm);off+=30+nm.length+sz;
+  });
+  var cs=cd.reduce(function(a,x){return a+x.length},0),e=new DataView(new ArrayBuffer(22));
+  e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+  var all=parts.concat(cd,[new Uint8Array(e.buffer)]),len=all.reduce(function(a,x){return a+x.length},0),out=new Uint8Array(len),q=0;
+  all.forEach(function(x){out.set(x,q);q+=x.length});return out;
+}
+function X(t){return String(t).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function wR(t,o){o=o||{};var pr=(o.b?'<w:b/>':'')+(o.i?'<w:i/>':'')+(o.u?'<w:u w:val="single"/>':'')+(o.sz?'<w:sz w:val="'+o.sz+'"/><w:szCs w:val="'+o.sz+'"/>':'');pr=pr?'<w:rPr>'+pr+'</w:rPr>':'';
+  return String(t).split("\t").map(function(x,i){return(i?'<w:r>'+pr+'<w:tab/></w:r>':'')+(x?'<w:r>'+pr+'<w:t xml:space="preserve">'+X(x)+'</w:t></w:r>':'')}).join("")}
+function wP(c,o){o=o||{};
+  var pr=(o.bd?'<w:pBdr><w:bottom w:val="double" w:sz="12" w:space="1" w:color="000000"/></w:pBdr>':'')+(o.tabs?'<w:tabs>'+o.tabs.map(function(t){return'<w:tab w:val="left" w:pos="'+t+'"/>'}).join("")+'</w:tabs>':'')+'<w:spacing w:before="'+(o.before||0)+'" w:after="'+(o.after||0)+'" w:line="'+(o.line||276)+'" w:lineRule="auto"/>'+((o.left||o.right||o.hanging)?'<w:ind w:left="'+(o.left||0)+'" w:right="'+(o.right||0)+'"'+(o.hanging?' w:hanging="'+o.hanging+'"':'')+'/>':'')+(o.jc?'<w:jc w:val="'+o.jc+'"/>':'');
+  return'<w:p><w:pPr>'+pr+(o.mark?'<w:rPr><w:sz w:val="'+o.mark+'"/></w:rPr>':'')+'</w:pPr>'+c+'</w:p>'}
+function wT(cols,cells,ind){var w=cols.reduce(function(a,b){return a+b},0);
+  return'<w:tbl><w:tblPr><w:tblW w:w="'+w+'" w:type="dxa"/>'+(ind?'<w:tblInd w:w="'+ind+'" w:type="dxa"/>':'')+'<w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid>'+cols.map(function(c){return'<w:gridCol w:w="'+c+'"/>'}).join("")+'</w:tblGrid><w:tr>'+cells.map(function(c,i){return'<w:tc><w:tcPr><w:tcW w:w="'+cols[i]+'" w:type="dxa"/></w:tcPr>'+c+'</w:tc>'}).join("")+'</w:tr></w:tbl>'}
+function wImg(li){var A='http://schemas.openxmlformats.org/drawingml/2006/main';
+  return'<w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="'+li.cx+'" cy="'+li.cy+'"/><wp:docPr id="1" name="Logo"/><wp:cNvGraphicFramePr><a:graphicFrameLocks noChangeAspect="1"/></wp:cNvGraphicFramePr><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic><pic:nvPicPr><pic:cNvPr id="0" name="logo"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rId2"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="'+li.cx+'" cy="'+li.cy+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r>'}
+function buildDocx(e,li){
+  var fam=(FONTS[fsel.f]||FONTS[0])[0],S=fsel.s*2;
+  var tm=nextDue(e.tmt),nx=nextDue(iso(tm)),ns=newSalary(e),mb=e.mkb||0;
+  function v(k){return skv[k]||"........"}
+  var tg=skv.tgl?tgl.format(parse(skv.tgl)):"........";
+  var T1=[2126,4366,4536],T2=[2410,4366,4536];
+  function row(no,lab,val,sub){return wP(wR(no+"\t"+lab+"\t:\t")+val,{left:4536,hanging:sub?2551:2835,tabs:sub?T2:T1})}
+  var gol=e.gol+(skv.tmtgol?" ( "+dpi(skv.tmtgol)+" )":"");
+  var b=[];
+  b.push(wT([1500,9200],[wP(li?wImg(li):"",{jc:"center",line:240}),
+    wP(wR(v("daerah").toUpperCase(),{b:1,sz:30}),{jc:"center",line:240})+wP(wR("DINAS PENDIDIKAN, KEPEMUDAAN DAN OLAHRAGA",{b:1,sz:33}),{jc:"center",line:240})+wP(wR(v("alamat"),{sz:17}),{jc:"center",line:240})+wP(wR("E-mail : "+v("email"),{sz:17}),{jc:"center",line:240})],-500));
+  b.push(wP("",{bd:1,left:-500,right:-534,mark:4,line:240}));
+  b.push(wP(wR(v("kota")+", "+tg),{left:6096,before:100,after:40}));
+  b.push(wT([5100,4566],[
+    wP(wR("Nomor\t: "+v("no")),{tabs:[1300],left:1480,hanging:1480})+wP(wR("Lampiran\t: "+v("lamp")),{tabs:[1300],left:1480,hanging:1480})+wP(wR("Perihal\t: Surat Pemberitahuan Kenaikan Gaji Berkala ")+wR("Pegawai Negeri Sipil",{u:1}),{tabs:[1300],left:1480,hanging:1480}),
+    wP(wR("Kepada"))+wP(wR("Yth.\t"+v("kepada")),{tabs:[600],left:600,hanging:600})+wP(wR("di-"))+wP(wR(v("tujuan"),{u:1}),{left:600})]));
+  b.push(wP(wR("Dengan ini diberitahukan, bahwa berhubung telah dipenuhinya masa kerja dan syarat-syarat lainnya sebagai Pegawai Negeri Sipil :"),{left:1418,right:29,jc:"both",before:100,after:60}));
+  b.push(row("1.","Nama",wR(e.nama,{b:1})));b.push(row("2.","NIP",wR(e.nip)));b.push(row("3.","Pangkat / Golongan",wR(pangkatOf(e.gol))));b.push(row("4.","Jabatan",wR(v("jab"))));b.push(row("5.","Unit Kerja",wR(v("unit"))));b.push(row("6.","Gaji Pokok lama",wR(rp0(e.lama))));
+  b.push(wP(wR("Atas dasar SK terakhir tentang gaji/pangkat yang ditetapkan :"),{left:1418,before:80,after:40}));
+  b.push(row("a.","Oleh Pejabat",wR(v("oleh")),1));b.push(row("b.","Tanggal",wR(dpi(skv.dtgl)),1));b.push(row("c.","Nomor",wR(v("dnomor")),1));
+  b.push(row("d.","Tgl Berlakunya",wR(dp(parse(e.tmt))),1));b.push(wP(wR("Gaji Tersebut"),{left:2410}));
+  b.push(row("e.","Masa kerja Gol.",wR(mkt(e.mkg,mb)),1));b.push(wP(wR("Pada Tgl. tersebut"),{left:2410}));
+  b.push(wP(wR("DIBERIKAN KENAIKAN GAJI BERKALA HINGGA MEMPEROLEH :"),{left:1418,before:80,after:40}));
+  b.push(row("7.","Gaji Pokok Baru",wR(rp0(ns.v)+" ")+wR("("+terbilang(ns.v)+")",{i:1})));
+  b.push(row("8.","Masa Kerja Golongan",wR(e.mkg!=null?mkt(e.mkg+2,mb):"........")));b.push(row("9.","Golongan Ruang Gaji",wR(gol)));
+  b.push(row("10.","Terhitung Mulai Tgl.",wR(dp(tm))));b.push(row("11.","KGB berikutnya",wR(dp(nx))));
+  b.push(wP(wR(v("penutup")),{left:1418,right:29,jc:"both",before:100}));
+  b.push(wP(wR(skv.ttdjab||""),{left:5812,before:100}));b.push(wP("",{left:5812}));b.push(wP("",{left:5812}));
+  b.push(wP(wR(v("kepala"),{b:1}),{left:5812}));
+  if(skv.pangkat)b.push(wP(wR(skv.pangkat),{left:5812}));
+  if(skv.nipk)b.push(wP(wR("NIP. "+skv.nipk),{left:5812}));
+  b.push(wP(wR("Tembusan disampaikan kepada Yth :",{sz:S-1}),{left:162,before:100}));
+  tembusLines().forEach(function(x,i){b.push(wP(wR((i+1)+".\t"+x,{sz:S-1}),{left:450,hanging:270,tabs:[450],jc:"both"}))});
+  var W='http://schemas.openxmlformats.org/wordprocessingml/2006/main',R='http://schemas.openxmlformats.org/officeDocument/2006/relationships',PK='http://schemas.openxmlformats.org/package/2006/relationships';
+  var doc='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="'+W+'" xmlns:r="'+R+'" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><w:body>'+b.join("")+'<w:sectPr><w:pgSz w:w="12240" w:h="18720"/><w:pgMar w:top="284" w:right="1134" w:bottom="993" w:left="1440" w:header="720" w:footer="720" w:gutter="0"/></w:sectPr></w:body></w:document>';
+  var sty='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:styles xmlns:w="'+W+'"><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="'+fam+'" w:hAnsi="'+fam+'" w:cs="'+fam+'" w:eastAsia="'+fam+'"/><w:sz w:val="'+S+'"/><w:szCs w:val="'+S+'"/><w:lang w:val="id-ID"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="0" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults><w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/></w:style></w:styles>';
+  var ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Default Extension="jpeg" ContentType="image/jpeg"/><Default Extension="png" ContentType="image/png"/><Default Extension="gif" ContentType="image/gif"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/></Types>';
+  var rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="'+PK+'"><Relationship Id="rId1" Type="'+R+'/styles" Target="styles.xml"/>'+(li?'<Relationship Id="rId2" Type="'+R+'/image" Target="media/logo.'+li.ext+'"/>':'')+'</Relationships>';
+  var root='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="'+PK+'"><Relationship Id="rId1" Type="'+R+'/officeDocument" Target="word/document.xml"/></Relationships>';
+  var en=new TextEncoder(),files=[{name:"[Content_Types].xml",data:en.encode(ct)},{name:"_rels/.rels",data:en.encode(root)},{name:"word/document.xml",data:en.encode(doc)},{name:"word/styles.xml",data:en.encode(sty)},{name:"word/_rels/document.xml.rels",data:en.encode(rels)}];
+  if(li)files.push({name:"word/media/logo."+li.ext,data:li.bytes});
+  return zipFiles(files);
+}
+function exportDocx(){
+  var m=logo&&logo.match(/^data:image\/(png|jpe?g|gif);base64,(.+)$/);
+  function go(w,h){
+    var li=null;
+    if(m){var bin=atob(m[2]),by=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)by[i]=bin.charCodeAt(i);li={bytes:by,ext:m[1]==="jpg"?"jpeg":m[1],cx:684000,cy:Math.round(684000*(w&&h?h/w:1.27))}}
+    saveFile("SK-KGB-"+skEmp.nama.replace(/[^A-Za-z0-9]+/g,"-")+".docx",buildDocx(skEmp,li),"application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+  }
+  if(m){var im=new Image();im.onload=function(){go(im.naturalWidth,im.naturalHeight)};im.onerror=function(){go(0,0)};im.src=logo}else go(0,0);
+}
+$("skdocx").addEventListener("click",exportDocx);
 $("skclose").addEventListener("click",function(){$("skwrap").hidden=true;document.body.style.overflow="";render()});
 $("skprint").addEventListener("click",function(){try{window.print()}catch(e){alert("Cetak tidak tersedia di tampilan ini. Gunakan Unduh SK (HTML), lalu cetak dari browser.")}});
 $("skdl").addEventListener("click",function(){
-  var doc='<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><title>SK KGB '+esc(skEmp.nama)+'</title><style>body{margin:0;background:#eee}'+SC+'@media print{body{background:#fff}.sheet{box-shadow:none;margin:0;padding:0;min-height:0;width:auto}@page{size:215mm 330mm;margin:5mm 20mm 17mm 25.4mm}}</style></head><body><article class="sheet" style="'+fontCss()+'">'+sheetHTML(skEmp)+'</article></body></html>';
+  var doc='<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><title>SK KGB '+esc(skEmp.nama)+'</title><style>body{margin:0;background:#eee}'+SC+'@media print{body{background:#fff}.sheet{box-shadow:none;margin:0;padding:0;min-height:0;width:auto}@page{size:215mm 330mm;margin:5mm 10mm 17mm 18mm}}</style></head><body><article class="sheet" style="'+fontCss()+'">'+sheetHTML(skEmp)+'</article></body></html>';
   saveFile("SK-KGB-"+skEmp.nama.replace(/[^A-Za-z0-9]+/g,"-")+".html",doc,"text/html");
 });
 
